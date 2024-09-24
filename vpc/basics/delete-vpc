@@ -1,0 +1,32 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+  echo "Usage: delete_vpc <VPC_ID> <IGW_ID> <SUBNET_ID> <RT_ID> <ASSOC_ID>"
+  exit 1
+fi
+
+VPC_ID=$1
+IGW_ID=$2
+SUBNET_ID=$3
+RT_ID=$4
+ASSOC_ID=$5
+
+echo "Detaching Internet Gateway"
+aws ec2 detach-internet-gateway --internet-gateway-id $IGW_ID --vpc-id $VPC_ID
+
+echo "Deleting Internet Gateway"
+aws ec2 delete-internet-gateway --internet-gateway-id $IGW_ID
+
+echo "Disassociating Route Table"
+aws ec2 disassociate-route-table --association-id $ASSOC_ID
+
+echo "Deleting Subnet"
+aws ec2 delete-subnet --subnet-id $SUBNET_ID
+
+echo "Deleting Route Table"
+aws ec2 delete-route-table --route-table-id $RT_ID
+
+echo "Deleting VPC"
+aws ec2 delete-vpc --vpc-id $VPC_ID
+
+echo "VPC Deletion Completed"
