@@ -1,0 +1,45 @@
+Resources:
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-user.html#aws-resource-iam-user-properties
+  MyUser:
+    Type: AWS::IAM::User
+    Properties:
+      Username: 'my-cool-user'
+      ManagedPolicyArns:
+        - arn:aws:iam:aws:policy/job-function/ViewOnlyAccess
+      Policies:
+        - PolictyName: MyCoolPolicy
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: IamListAccess
+                Effect: Allow
+                Action:
+                - 'iam:ListRoles'
+                - 'iam:ListUsers'
+                Resources: '*'
+  MyInlinePolicy:
+    Type: 'AWS::IAM:Policy'
+    Properties:
+      PolicyName: MyInlinePolicy
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: 'ec2:*'
+            Resources: '*'
+      Users:
+        - !Ref MyUser
+  
+  MySecondInlinePolicy:
+    Type: 'AWS::IAM:Policy'
+    Properties:
+      PolicyName: MySecondInlinePolicy
+      UserName: !Ref MyUser
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: 's3:*'
+            Resources: '*'
+      Users:
+        - !Ref MyUser
